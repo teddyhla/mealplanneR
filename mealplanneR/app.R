@@ -15,39 +15,47 @@ ui <- fluidPage(
 
     # Application title
     titlePanel("meal planneR"),
+    hr(),
+    br(),
+    tabsetPanel(
+            tabPanel("Generate recipes",
+                     sidebarLayout(
+                    sidebarPanel(
+                            sliderInput("meal_no",
+                                        "Number of meals to generate:",
+                                        min = 1,
+                                        max = 10,
+                                        value = 5),
+                            checkboxGroupInput("m_feat","Features for dishes:",
+                                               list_features)
+                            
+                    ),
+                    
+                    # Show a plot of the generated distribution
+                    mainPanel(
+                            plotOutput("distPlot")
+                    )
+            )),
+            tabPanel("Input your recipes",
+                     fluidRow(
+                             "Click this URL to input your new recipes:",
+                             uiOutput("form_link")
+                     ),
+                     fluidRow(
+                             
+                     ))
+    )
 
     # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("meal_no",
-                        "Number of meals to generate:",
-                        min = 1,
-                        max = 10,
-                        value = 5),
-            checkboxGroupInput("m_feat","Features for dishes:",
-                               list_features)
-            
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
-    )
+    
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+        form_url <- a("Recipe Input",href="https://forms.gle/nQtqd5W1TwCw1ZDYA")
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
+    output$form_link <- renderUI({
+            tagList("URL Link",form_url)
     })
 }
 
